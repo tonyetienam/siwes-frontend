@@ -4,27 +4,27 @@ import '../App.css';
 
 const AcademicSupervisorDashboard = () => {
   const { user, token, logout } = useContext(AuthContext);
-  const [applications, setApplications] = useState([]);
+  const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch applications
-  const fetchApplications = useCallback(async () => {
+  // Fetch students in the department
+  const fetchStudents = useCallback(async () => {
     try {
-      const res = await fetch('https://siwes-backend-5l8q.onrender.com/api/applications/company', {
+      const res = await fetch('https://siwes-backend-g2kvs.onrender.com/api/academic/students', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
-      if (res.ok) setApplications(data);
+      if (res.ok) setStudents(data);
     } catch (err) { 
-      console.error('Error fetching applications:', err);
+      console.error('Error fetching students:', err);
     } finally { 
       setLoading(false); 
     }
   }, [token]);
 
   useEffect(() => {
-    fetchApplications();
-  }, [fetchApplications]);
+    fetchStudents();
+  }, [fetchStudents]);
 
   return (
     <div className="app-container">
@@ -38,42 +38,26 @@ const AcademicSupervisorDashboard = () => {
 
       <main className="app-main">
         <div className="form-card">
-          <h3>Student Oversight</h3>
+          <h3>Students in Your Department</h3>
           
-          {loading && <p>Loading data...</p>}
+          {loading && <p>Loading students...</p>}
           
-          {!loading && applications.length === 0 && (
-            <p style={{color: '#718096'}}>No student applications or logs assigned to your department yet.</p>
+          {!loading && students.length === 0 && (
+            <p style={{color: '#718096'}}>No students assigned to your department yet.</p>
           )}
 
-          {!loading && applications.map((app) => (
-            <div key={app._id} style={{
+          {!loading && students.map((student) => (
+            <div key={student._id} style={{
               background: '#f7fafc', 
               padding: '15px', 
               marginBottom: '15px', 
               borderRadius: '6px', 
               borderLeft: '4px solid #3182ce'
             }}>
-              <h4 style={{margin: '0 0 5px 0'}}>{app.studentId ? app.studentId.name : 'Unknown Student'}</h4>
+              <h4 style={{margin: '0 0 5px 0'}}>{student.name}</h4>
               <p style={{margin: '0', fontSize: '14px', color: '#4a5568'}}>
-                <strong>Email:</strong> {app.studentId ? app.studentId.email : 'N/A'}
+                <strong>Email:</strong> {student.email}
               </p>
-              <p style={{margin: '0', fontSize: '14px', color: '#4a5568'}}>
-                <strong>Applied for:</strong> {app.internshipId ? app.internshipId.title : 'Unknown Position'}
-              </p>
-              <div style={{marginTop: '10px'}}>
-                <strong>Status: </strong>
-                <span style={{
-                  padding: '4px 12px', 
-                  borderRadius: '20px', 
-                  fontSize: '12px', 
-                  fontWeight: 'bold',
-                  backgroundColor: app.status === 'Pending' ? '#fefcbf' : app.status === 'Accepted' ? '#c6f6d5' : '#fed7d7',
-                  color: app.status === 'Pending' ? '#975a16' : app.status === 'Accepted' ? '#22543d' : '#9b2c2c'
-                }}>
-                  {app.status}
-                </span>
-              </div>
             </div>
           ))}
         </div>
