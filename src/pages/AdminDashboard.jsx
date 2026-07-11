@@ -13,7 +13,7 @@ const AdminDashboard = () => {
   // 1. Fetch Users
   const fetchUsers = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/admin/users', {
+      const res = await fetch('https://siwes-backend-5l8q.onrender.com/api/admin/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -26,7 +26,7 @@ const AdminDashboard = () => {
   // 2. Fetch Stats for Charts
   const fetchStats = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/admin/dashboard/stats', {
+      const res = await fetch('https://siwes-backend-5l8q.onrender.com/api/admin/dashboard/stats', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -39,7 +39,7 @@ const AdminDashboard = () => {
   // 3. Fetch Recent Activity Logs
   const fetchLogs = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/admin/logs/recent', {
+      const res = await fetch('https://siwes-backend-5l8q.onrender.com/api/admin/logs/recent', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -57,7 +57,7 @@ const AdminDashboard = () => {
 
   const updateRole = async (id, newRole) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/users/${id}`, {
+      const res = await fetch(`https://siwes-backend-5l8q.onrender.com/api/admin/users/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json', 
@@ -79,7 +79,7 @@ const AdminDashboard = () => {
   const deleteUser = async (id) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/users/${id}`, {
+      const res = await fetch(`https://siwes-backend-5l8q.onrender.com/api/admin/users/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -94,13 +94,13 @@ const AdminDashboard = () => {
     }
   };
 
-  // Prepare Chart Data
+  // Chart Data
   const pieData = [
     { name: 'Pending', value: stats.pendingApps || 0 },
     { name: 'Accepted', value: stats.acceptedApps || 0 },
     { name: 'Rejected', value: stats.rejectedApps || 0 }
   ];
-  const COLORS = ['#f6ad55', '#48bb78', '#fc8181']; // Orange, Green, Red
+  const COLORS = ['#f6ad55', '#48bb78', '#fc8181'];
 
   return (
     <div className="app-container">
@@ -109,10 +109,39 @@ const AdminDashboard = () => {
         <button onClick={logout} className="btn-danger">Logout</button>
       </header>
 
-      <nav className="app-nav">
-        <button onClick={() => setView('users')} className={view === 'users' ? 'active' : ''}>Manage Users</button>
-        <button onClick={() => setView('analytics')} className={view === 'analytics' ? 'active' : ''}>Analytics Dashboard</button>
-      </nav>
+      {/* NEW CLICKABLE TAB NAVIGATION */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+        <button 
+          onClick={() => setView('users')} 
+          style={{ 
+            flex: 1, 
+            padding: '10px', 
+            borderRadius: '6px', 
+            border: view === 'users' ? '2px solid #3182ce' : '1px solid #e2e8f0',
+            backgroundColor: view === 'users' ? '#ebf8ff' : 'transparent',
+            fontWeight: view === 'users' ? 'bold' : 'normal',
+            cursor: 'pointer',
+            color: view === 'users' ? '#2b6cb0' : '#4a5568'
+          }}
+        >
+          Manage Users
+        </button>
+        <button 
+          onClick={() => setView('analytics')} 
+          style={{ 
+            flex: 1, 
+            padding: '10px', 
+            borderRadius: '6px', 
+            border: view === 'analytics' ? '2px solid #3182ce' : '1px solid #e2e8f0',
+            backgroundColor: view === 'analytics' ? '#ebf8ff' : 'transparent',
+            fontWeight: view === 'analytics' ? 'bold' : 'normal',
+            cursor: 'pointer',
+            color: view === 'analytics' ? '#2b6cb0' : '#4a5568'
+          }}
+        >
+          Analytics Dashboard
+        </button>
+      </div>
 
       <main className="app-main">
         <div className="form-card">
@@ -164,7 +193,6 @@ const AdminDashboard = () => {
             <>
               <h3>System Analytics & Activity Log</h3>
               
-              {/* Summary Cards */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px', marginBottom: '30px' }}>
                 <div style={{ background: '#ebf8ff', padding: '15px', borderRadius: '8px', textAlign: 'center' }}>
                   <h4 style={{ margin: 0, color: '#2b6cb0' }}>{stats.totalStudents || 0}</h4>
@@ -186,12 +214,7 @@ const AdminDashboard = () => {
                   <h4>Application Status Breakdown</h4>
                   <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
-                      <Pie 
-                        data={pieData} 
-                        dataKey="value" 
-                        innerRadius={40} 
-                        outerRadius={80}
-                      >
+                      <Pie data={pieData} dataKey="value" innerRadius={40} outerRadius={80}>
                         {pieData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}

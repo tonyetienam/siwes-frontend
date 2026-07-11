@@ -17,6 +17,7 @@ const StudentDashboard = () => {
   // 1. Fetch Open Internships & Applications
   const fetchData = useCallback(async () => {
     try {
+      // UPDATED: Added '/api' correctly to all endpoints
       const intRes = await fetch('https://siwes-backend-5l8q.onrender.com/api/internships', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -48,7 +49,6 @@ const StudentDashboard = () => {
     } catch (err) { console.error(err); }
   }, [token]);
 
-  // UseEffect with proper dependencies (Fixes Vercel build error)
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -172,6 +172,7 @@ const StudentDashboard = () => {
                   <div key={log._id} style={{borderBottom: '1px solid #e2e8f0', padding: '10px 0'}}>
                     <p><strong>{new Date(log.date).toLocaleDateString()}</strong></p>
                     <p>{log.content}</p>
+                    {/* UPDATED: Added full Render URL for file downloads */}
                     {log.fileUrl && <a href={`https://siwes-backend-5l8q.onrender.com${log.fileUrl}`} target="_blank" rel="noreferrer">📎 View Attachment</a>}
                     <br /><span style={{color: '#718096', fontSize: '12px'}}>Status: {log.status}</span>
                   </div>
