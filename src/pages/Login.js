@@ -14,24 +14,24 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // --- REGISTRATION LOGIC ---
     if (isRegistering) {
-      // --- REGISTRATION LOGIC ---
       try {
-        const res = await fetch('http://localhost:5000/api/register', {
+        const res = await fetch('https://siwes-backend-5l8q.onrender.com/api/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password, role: 'student' }) // Defaults to student role
+          body: JSON.stringify({ name, email, password, role: 'student' })
         });
         const data = await res.json();
         if (res.ok) {
           alert('Registration successful! Please login with your new account.');
-          setIsRegistering(false); // Switch back to login view
-          setPassword(''); // Clear password for security
+          setIsRegistering(false);
+          setPassword('');
         } else {
           alert('Registration failed: ' + (data.error || 'Email may already be in use.'));
         }
       } catch (err) {
-        alert('Network error during registration.');
+        alert('Network error during registration. Check your internet or backend URL.');
       }
     } else {
       // --- LOGIN LOGIC ---
@@ -50,7 +50,6 @@ const Login = () => {
         <h2>{isRegistering ? 'Create an Account' : 'SIWES Management Login'}</h2>
         
         <form onSubmit={handleSubmit}>
-          {/* Show Name input ONLY when registering */}
           {isRegistering && (
             <input 
               type="text" 
@@ -82,12 +81,11 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Toggle between Register and Login */}
         <p style={{ marginTop: '20px', cursor: 'pointer', color: '#3182ce', fontSize: '14px' }}>
           <span onClick={() => {
             setIsRegistering(!isRegistering);
-            setName(''); // Reset name field when toggling
-            setPassword(''); // Reset password field when toggling
+            setName('');
+            setPassword('');
           }}>
             {isRegistering ? 'Already have an account? Login' : "Don't have an account? Register"}
           </span>
