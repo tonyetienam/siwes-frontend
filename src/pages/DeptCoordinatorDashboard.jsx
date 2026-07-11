@@ -7,16 +7,15 @@ const DeptCoordinatorDashboard = () => {
   const [students, setStudents] = useState([]);
 
   useEffect(() => {
+    const fetchStudents = async () => {
+      const res = await fetch('https://siwes-backend-5l8q.onrender.com/api/dept/students', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setStudents(data);
+    };
     fetchStudents();
-  }, []);
-
-  const fetchStudents = async () => {
-    const res = await fetch('http://localhost:5000/api/dept/students', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (res.ok) setStudents(data);
-  };
+  }, [token]); // Added [token] to prevent the Vercel build warning
 
   return (
     <div className="app-container">
@@ -31,11 +30,16 @@ const DeptCoordinatorDashboard = () => {
         <div className="form-card">
           <h3>Students in Your Department</h3>
           {students.length === 0 ? <p>No students assigned to this department.</p> : (
-            students.map(s => <div key={s._id} style={{padding: '10px', borderBottom: '1px solid #eee'}}>{s.name} ({s.email})</div>)
+            students.map(s => (
+              <div key={s._id} style={{padding: '10px', borderBottom: '1px solid #eee'}}>
+                {s.name} ({s.email})
+              </div>
+            ))
           )}
         </div>
       </main>
     </div>
   );
 };
+
 export default DeptCoordinatorDashboard;
