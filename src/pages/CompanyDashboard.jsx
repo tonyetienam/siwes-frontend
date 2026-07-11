@@ -9,13 +9,17 @@ const CompanyDashboard = () => {
   const [internship, setInternship] = useState({ title: '', description: '', requirements: '', location: '', deadline: '' });
   const [myInternships, setMyInternships] = useState([]);
 
-  // Define fetchMyInternships with useCallback to prevent it from changing on every render
+  // Define fetchMyInternships with useCallback
   const fetchMyInternships = useCallback(async () => {
-    const res = await fetch('http://localhost:5000/api/internships/my', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (res.ok) setMyInternships(data);
+    try {
+      const res = await fetch('https://siwes-backend-5l8q.onrender.com/api/internships/my', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setMyInternships(data);
+    } catch (err) {
+      console.error("Error fetching internships:", err);
+    }
   }, [token]);
 
   // Fetch internships on load
@@ -25,7 +29,7 @@ const CompanyDashboard = () => {
 
   const handleApiCall = async (url, data, method = 'POST') => {
     try {
-      const res = await fetch(`http://localhost:5000${url}`, {
+      const res = await fetch(`https://siwes-backend-5l8q.onrender.com${url}`, {
         method,
         headers: { 
           'Content-Type': 'application/json',
