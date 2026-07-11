@@ -1,4 +1,3 @@
-import AcademicSupervisorDashboard from './pages/AcademicSupervisorDashboard';
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
@@ -8,6 +7,8 @@ import StudentDashboard from './pages/StudentDashboard';
 import CompanyDashboard from './pages/CompanyDashboard';
 import IndustrySupervisorDashboard from './pages/IndustrySupervisorDashboard';
 import DeptCoordinatorDashboard from './pages/DeptCoordinatorDashboard';
+// eslint-disable-next-line
+import AcademicSupervisorDashboard from './pages/AcademicSupervisorDashboard';
 import './App.css';
 
 // --- PROTECTED ROUTE COMPONENT ---
