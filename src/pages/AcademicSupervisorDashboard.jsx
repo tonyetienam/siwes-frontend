@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import '../App.css';
 
@@ -6,25 +6,36 @@ const AcademicSupervisorDashboard = () => {
   const { user, token, logout } = useContext(AuthContext);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Fetch students in the department
-  const fetchStudents = useCallback(async () => {
-    try {
-      const res = await fetch('https://siwes-backend-g2kvs.onrender.com/api/academic/students', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (res.ok) setStudents(data);
-    } catch (err) { 
-      console.error('Error fetching students:', err);
-    } finally { 
-      setLoading(false); 
-    }
-  }, [token]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    const fetchStudents = async () => {
+      // SAFETY CHECK: If user has no department, stop and show message
+      if (!user.department) {
+        setLoading(false);
+        setError("You do not have a department assigned. Please contact an Admin.");
+        return;
+      }
+
+      try {
+        const res = await fetch('https://siwes-backend-g2kvs.onrender.com/api/academic/students', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setStudents(data);
+        } else {
+          setError(data.error || 'Failed to fetch students.');
+        }
+      } catch (err) {
+        setError('Network error connecting to the backend.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchStudents();
-  }, [fetchStudents]);
+  }, [token, user.department]);
 
   return (
     <div className="app-container">
@@ -42,11 +53,17 @@ const AcademicSupervisorDashboard = () => {
           
           {loading && <p>Loading students...</p>}
           
-          {!loading && students.length === 0 && (
+          {error && (
+            <div style={{ background: '#fed7d7', padding: '15px', borderRadius: '6px', color: '#9b2c2c', marginBottom: '15px' }}>
+              <strong>Notice:</strong> {error}
+            </div>
+          )}
+
+          {!loading && !error && students.length === 0 && (
             <p style={{color: '#718096'}}>No students assigned to your department yet.</p>
           )}
 
-          {!loading && students.map((student) => (
+          {!loading && !error && students.map((student) => (
             <div key={student._id} style={{
               background: '#f7fafc', 
               padding: '15px', 
